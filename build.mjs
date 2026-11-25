@@ -84,7 +84,7 @@ posts.sort((a, b) => String(b.date).localeCompare(String(a.date)) || String(a.sl
 fs.writeFileSync(path.join(outDir, 'posts.json'), JSON.stringify({ posts }, null, 2) + '\n', 'utf8');
 fs.writeFileSync(path.join(outDir, 'seed.json'), JSON.stringify({ posts }, null, 2) + '\n', 'utf8');
 
-const SITE_URL = 'https://37lnq3mgkji5x4uzdky.traesite.cn';
+const SITE_URL = 'https://hejunjiea.github.io/my-tech-blog';
 const SITE_NAME = '我的技术博客';
 const SITE_DESC = '记录 iOS 逆向、前端、后端、AI 与工程实践的笔记。';
 
