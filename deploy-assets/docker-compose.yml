@@ -1,0 +1,14 @@
+services:
+  blog:
+    build: .
+    container_name: my-tech-blog
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      ADMIN_TOKEN: ${ADMIN_TOKEN:?请先在 .env 里设置 ADMIN_TOKEN}
+      PORT: 8000
+      HOST: 0.0.0.0
+      DATA_DIR: /data
+    volumes:
+      - ./data:/data

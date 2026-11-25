@@ -1,0 +1,33 @@
+# ---- 构建与部署产物（可随时重建）----
+/local-site/
+/dist/
+/deploy-package/
+/blog-deploy.tar.gz
+
+# ---- 本地运行时数据（线上发布的文章）----
+/data/
+*.bak
+*.tmp
+
+# ---- 环境变量与口令 ----
+.env
+.env.*
+!.env.example
+
+# ---- 依赖与包管理（本项目零依赖，保留以防将来引入）----
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json.bak
+
+# ---- 日志 ----
+*.log
+logs/
+
+# ---- 系统与编辑器 ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

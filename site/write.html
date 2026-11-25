@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>写作台 · 我的技术博客</title>
+<meta name="robots" content="noindex,nofollow">
+<script>
+(function () {
+  try {
+    var mode = localStorage.getItem('blog-theme-mode');
+    if (!mode) {
+      var old = localStorage.getItem('blog-theme');
+      mode = (old === 'light' || old === 'dark') ? old : 'system';
+    }
+    var dark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var html = document.documentElement;
+    html.setAttribute('data-theme', dark ? 'dark' : 'light');
+    html.setAttribute('data-theme-mode', mode);
+  } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="style.css">
+<style>
+  .writer-head { padding: 44px 0 0; }
+  .writer-head .inner {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 16px; padding-bottom: 18px; border-bottom: 1px solid var(--line);
+  }
+  .writer-title { padding: 44px 0 10px; }
+  .writer-title h1 {
+    font-family: Georgia, "Songti SC", "Noto Serif SC", serif;
+    font-weight: 500; font-size: 30px; margin: 0 0 10px;
+  }
+  .writer-title p { margin: 0; color: var(--muted); font-size: 14px; }
+  .editor-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
+    padding: 28px 0 20px; align-items: start;
+  }
+  .pane { border: 1px solid var(--line); border-radius: 4px; background: var(--bg); }
+  .pane-head {
+    padding: 12px 16px; border-bottom: 1px solid var(--line);
+    font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint);
+  }
+  .pane-body { padding: 18px 16px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 6px; }
+  .field input[type="text"], .field input[type="date"] {
+    width: 100%; padding: 9px 10px; font-size: 14px; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 3px; background: var(--paper);
+    font-family: inherit;
+  }
+  .field input:focus { outline: none; border-color: var(--focus); background: var(--bg); }
+  .row-2 { display: grid; grid-template-columns: 150px 1fr; gap: 12px; }
+  textarea#content {
+    width: 100%; min-height: 380px; resize: vertical; padding: 12px;
+    font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 13px; line-height: 1.75; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 3px; background: var(--paper);
+  }
+  textarea#content:focus { outline: none; border-color: var(--focus); background: var(--bg); }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+  button {
+    font-family: inherit; font-size: 13px; padding: 8px 14px; cursor: pointer;
+    border: 1px solid var(--line); border-radius: 3px; background: var(--bg); color: var(--ink);
+    transition: background .18s ease, border-color .18s ease;
+  }
+  button:hover { background: var(--paper); border-color: var(--hover); }
+  button.primary { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  button.primary:hover { background: var(--muted); border-color: var(--muted); }
+  .drafts { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .drafts label { display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 8px; }
+  .drafts select {
+    width: 100%; padding: 9px 10px; font-size: 13.5px; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 3px; background: var(--paper);
+    font-family: inherit;
+  }
+  .drafts input {
+    width: 100%; padding: 9px 10px; font-size: 13.5px; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 3px; background: var(--paper);
+    font-family: inherit;
+  }
+  .drafts input:focus { outline: none; border-color: var(--focus); background: var(--bg); }
+  .status { min-height: 20px; margin-top: 10px; font-size: 12.5px; color: var(--accent); line-height: 1.7; }
+  .preview { position: sticky; top: 20px; }
+  .preview .article { padding: 24px 20px 12px; }
+  .preview .article h1 { font-size: 24px; margin-bottom: 10px; }
+  .preview .article .meta { margin-bottom: 20px; padding-bottom: 16px; }
+  .preview-empty { color: var(--faint); font-size: 13.5px; padding: 8px 0; }
+  .writer-tips { margin: 10px 0 70px; font-size: 12.5px; color: var(--faint); line-height: 1.9; }
+  @media (max-width: 820px) {
+    .editor-grid { grid-template-columns: 1fr; }
+    .preview { position: static; }
+    .writer-head .inner { flex-direction: column; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="writer-head">
+  <div class="wrap inner">
+    <a class="brand" href="index.html">我的技术博客</a>
+    <nav class="nav">
+      <a href="index.html">文章</a>
+      <a href="index.html#about">关于</a>
+      <div class="theme-switch" id="theme-switch" role="group" aria-label="主题模式">
+        <button type="button" data-mode="light" aria-label="浅色模式" title="浅色模式"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg></button>
+        <button type="button" data-mode="dark" aria-label="深色模式" title="深色模式"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+        <button type="button" data-mode="system" aria-label="跟随系统" title="跟随系统"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none"/></svg></button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="writer-title">
+    <h1>写作台</h1>
+    <p>文章以 Markdown 保存。这里写标题与正文，右侧实时预览，可导出 md 文件参与构建。</p>
+  </div>
+
+  <div class="editor-grid">
+    <section class="pane">
+      <div class="pane-head">编辑</div>
+      <div class="pane-body">
+        <div class="field">
+          <label for="title">标题</label>
+          <input id="title" type="text" placeholder="例如：一次线上故障的复盘">
+        </div>
+        <div class="field row-2">
+          <div>
+            <label for="date">日期</label>
+            <input id="date" type="date">
+          </div>
+          <div>
+            <label for="category">分类</label>
+            <input id="category" type="text" placeholder="例如：后端开发">
+          </div>
+        </div>
+        <div class="field">
+          <label for="summary">摘要</label>
+          <input id="summary" type="text" placeholder="一句话概括，显示在首页列表">
+        </div>
+        <div class="field">
+          <label for="content">正文（支持 Markdown：## 小标题、- 列表、&gt; 引用、``` 代码块、**加粗**、`行内代码`）</label>
+          <textarea id="content" spellcheck="false" placeholder="从一个具体的问题写起……"></textarea>
+        </div>
+        <div class="actions">
+          <button class="primary" id="btn-publish">发布到线上</button>
+          <button id="btn-save">保存草稿</button>
+          <button id="btn-export">导出 Markdown 文件</button>
+          <button id="btn-copy">复制 Markdown</button>
+          <button id="btn-new">新建</button>
+        </div>
+        <div class="drafts">
+          <label for="token">写作口令（只保存在本机浏览器）</label>
+          <input id="token" type="password" placeholder="部署时设置的口令" autocomplete="off">
+        </div>
+        <div class="drafts">
+          <label for="drafts">我的草稿（保存在本机浏览器）</label>
+          <select id="drafts"></select>
+        </div>
+        <div class="drafts">
+          <label for="online">线上文章（选中可载入编辑）</label>
+          <select id="online"></select>
+          <div class="actions" style="margin-top:10px">
+            <button id="btn-online-delete">删除选中文章</button>
+            <button id="btn-online-reload">刷新线上列表</button>
+          </div>
+        </div>
+        <div class="status" id="status"></div>
+      </div>
+    </section>
+
+    <section class="pane preview">
+      <div class="pane-head">预览</div>
+      <article class="article" id="preview">
+        <p class="preview-empty">左侧开始输入，这里会实时渲染。</p>
+      </article>
+    </section>
+  </div>
+
+  <p class="writer-tips">
+    发布方式：填好写作口令后点「发布到线上」，文章立即出现在首页，访客即可阅读；选中「线上文章」可载入修改或删除。也可「导出 Markdown 文件」，放进 blog-site/content/posts 后运行部署脚本，作为站点的基线内容。草稿只保存在当前浏览器。
+  </p>
+</main>
+
+<footer class="site-footer wrap">
+  <span>© 2026 我的技术博客</span>
+  <span><a href="index.html">回到首页</a></span>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  var STORAGE_KEY = 'blog-writer-drafts-v1';
+  var Blog = window.Blog;
+  var els = {
+    title: document.getElementById('title'),
+    date: document.getElementById('date'),
+    category: document.getElementById('category'),
+    summary: document.getElementById('summary'),
+    content: document.getElementById('content'),
+    preview: document.getElementById('preview'),
+    drafts: document.getElementById('drafts'),
+    online: document.getElementById('online'),
+    token: document.getElementById('token'),
+    status: document.getElementById('status')
+  };
+  var currentId = null;
+  var saveTimer = null;
+  var editSlug = null;
+
+  function today() {
+    var d = new Date();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return d.getFullYear() + '-' + m + '-' + day;
+  }
+
+  function renderPreview() {
+    var title = els.title.value.trim();
+    var body = Blog.mdToHtml(els.content.value);
+    if (!title && !body) {
+      els.preview.innerHTML = '<p class="preview-empty">左侧开始输入，这里会实时渲染。</p>';
+      return;
+    }
+    els.preview.innerHTML =
+      '<h1>' + (Blog.escapeHtml(title) || '未命名文章') + '</h1>' +
+      '<p class="meta">' + Blog.escapeHtml(Blog.formatDate(els.date.value)) +
+      ' · ' + Blog.escapeHtml(els.category.value.trim() || '笔记') + '</p>' +
+      body;
+  }
+
+  function readDrafts() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      var arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) { return []; }
+  }
+
+  function writeDrafts(list) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
+  }
+
+  function renderDraftOptions(selectedId) {
+    var drafts = readDrafts().sort(function (a, b) { return b.updatedAt - a.updatedAt; });
+    els.drafts.innerHTML = '<option value="">— 新建草稿 —</option>';
+    drafts.forEach(function (d) {
+      var opt = document.createElement('option');
+      opt.value = d.id;
+      opt.textContent = (d.title || '未命名') + '  ·  ' + (d.date || '');
+      if (d.id === selectedId) opt.selected = true;
+      els.drafts.appendChild(opt);
+    });
+  }
+
+  function setStatus(msg) {
+    els.status.textContent = msg || '';
+    if (msg) {
+      clearTimeout(setStatus._t);
+      setStatus._t = setTimeout(function () { els.status.textContent = ''; }, 6000);
+    }
+  }
+
+  /* ---------------- 线上发布 ---------------- */
+
+  function getToken() {
+    try { return els.token.value || localStorage.getItem('blog-admin-token') || ''; }
+    catch (e) { return els.token.value || ''; }
+  }
+
+  function saveToken() {
+    try { localStorage.setItem('blog-admin-token', els.token.value || ''); } catch (e) {}
+  }
+
+  function loadOnlineList() {
+    els.online.innerHTML = '<option value="">— 加载中 —</option>';
+    Blog.loadPosts().then(function (posts) {
+      els.online.innerHTML = '<option value="">— 选择一篇线上文章 —</option>';
+      posts.forEach(function (p) {
+        var opt = document.createElement('option');
+        opt.value = p.slug;
+        opt.textContent = p.date + '  ·  ' + p.title;
+        els.online.appendChild(opt);
+      });
+      if (editSlug) els.online.value = editSlug;
+    }).catch(function () {
+      els.online.innerHTML = '<option value="">— 加载失败 —</option>';
+    });
+  }
+
+  function publish() {
+    var token = getToken();
+    if (!token) { setStatus('请先填写写作口令'); els.token.focus(); return; }
+    if (!els.title.value.trim()) { setStatus('请先填写标题'); els.title.focus(); return; }
+    saveToken();
+    var payload = {
+      title: els.title.value.trim(),
+      date: els.date.value || today(),
+      category: els.category.value.trim() || '笔记',
+      summary: els.summary.value.trim(),
+      content: els.content.value
+    };
+    if (editSlug) payload.slug = editSlug;
+
+    fetch('api/posts', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-admin-token': token },
+      body: JSON.stringify(payload)
+    }).then(function (res) {
+      return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+    }).then(function (r) {
+      if (!r.ok) { setStatus('发布失败：' + (r.data && r.data.error ? r.data.error : '未知错误')); return; }
+      editSlug = r.data.post.slug;
+      setStatus('已发布，可在首页看到这篇文章');
+      saveDraft(true);
+      loadOnlineList();
+    }).catch(function () {
+      setStatus('发布失败，请检查网络后重试');
+    });
+  }
+
+  function deleteOnline() {
+    var slug = els.online.value;
+    var token = getToken();
+    if (!slug) { setStatus('先选择一篇线上文章'); return; }
+    if (!token) { setStatus('请先填写写作口令'); els.token.focus(); return; }
+    if (!confirm('确定删除这篇线上文章吗？')) return;
+    fetch('api/posts/' + encodeURIComponent(slug), {
+      method: 'DELETE',
+      headers: { 'x-admin-token': token }
+    }).then(function (res) {
+      return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+    }).then(function (r) {
+      if (!r.ok) { setStatus('删除失败：' + (r.data && r.data.error ? r.data.error : '未知错误')); return; }
+      if (editSlug === slug) editSlug = null;
+      setStatus('已删除');
+      loadOnlineList();
+    }).catch(function () {
+      setStatus('删除失败，请检查网络后重试');
+    });
+  }
+
+  function currentData() {
+    return {
+      id: currentId || ('d' + Date.now()),
+      title: els.title.value,
+      date: els.date.value,
+      category: els.category.value,
+      summary: els.summary.value,
+      content: els.content.value,
+      updatedAt: Date.now()
+    };
+  }
+
+  function saveDraft(silent) {
+    if (!els.title.value.trim() && !els.content.value.trim()) {
+      if (!silent) setStatus('还没有内容可保存');
+      return;
+    }
+    var data = currentData();
+    currentId = data.id;
+    var drafts = readDrafts();
+    var idx = -1;
+    for (var i = 0; i < drafts.length; i++) {
+      if (drafts[i].id === data.id) { idx = i; break; }
+    }
+    if (idx >= 0) drafts[idx] = data; else drafts.push(data);
+    writeDrafts(drafts);
+    renderDraftOptions(currentId);
+    if (!silent) setStatus('草稿已保存在本机浏览器');
+  }
+
+  function slugify() {
+    var base = els.date.value ? els.date.value.replace(/-/g, '') : String(Date.now());
+    return 'post-' + base + '-' + Math.random().toString(36).slice(2, 6);
+  }
+
+  function buildMarkdown(slug) {
+    var entry = {
+      slug: slug || slugify(),
+      title: els.title.value.trim(),
+      date: els.date.value || today(),
+      category: els.category.value.trim() || '笔记',
+      summary: els.summary.value.trim(),
+      content: els.content.value.replace(/\s+$/, '')
+    };
+    return [
+      '---',
+      'slug: ' + entry.slug,
+      'title: ' + entry.title,
+      'date: ' + entry.date,
+      'category: ' + entry.category,
+      'summary: ' + entry.summary,
+      '---',
+      '',
+      entry.content,
+      ''
+    ].join('\n');
+  }
+
+  function download(text, filename) {
+    var blob = new Blob([text], { type: 'text/markdown;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  function onInput() {
+    renderPreview();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () { saveDraft(true); }, 1200);
+  }
+
+  ['title', 'date', 'category', 'summary', 'content'].forEach(function (k) {
+    els[k].addEventListener('input', onInput);
+  });
+
+  document.getElementById('btn-save').addEventListener('click', function () { saveDraft(false); });
+
+  document.getElementById('btn-export').addEventListener('click', function () {
+    if (!els.title.value.trim()) { setStatus('先写一个标题再导出'); els.title.focus(); return; }
+    var slug = slugify();
+    download(buildMarkdown(slug), slug + '.md');
+    setStatus('已导出 ' + slug + '.md，放进 blog-site/content/posts 后运行 sh deploy.sh');
+  });
+
+  document.getElementById('btn-copy').addEventListener('click', function () {
+    if (!els.title.value.trim()) { setStatus('先写一个标题再复制'); els.title.focus(); return; }
+    var text = buildMarkdown();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        setStatus('Markdown 已复制，可直接发给助手发布');
+      }, function () {
+        setStatus('复制失败，请改用导出 Markdown 文件');
+      });
+    } else {
+      setStatus('当前浏览器不支持自动复制，请改用导出 Markdown 文件');
+    }
+  });
+
+  document.getElementById('btn-new').addEventListener('click', function () {
+    currentId = null;
+    editSlug = null;
+    els.title.value = '';
+    els.date.value = today();
+    els.category.value = '';
+    els.summary.value = '';
+    els.content.value = '';
+    renderDraftOptions('');
+    renderPreview();
+    setStatus('已新建空白草稿');
+    els.title.focus();
+  });
+
+  els.drafts.addEventListener('change', function () {
+    var id = els.drafts.value;
+    if (!id) { currentId = null; return; }
+    var drafts = readDrafts();
+    for (var i = 0; i < drafts.length; i++) {
+      if (drafts[i].id === id) {
+        currentId = id;
+        els.title.value = drafts[i].title || '';
+        els.date.value = drafts[i].date || today();
+        els.category.value = drafts[i].category || '';
+        els.summary.value = drafts[i].summary || '';
+        els.content.value = drafts[i].content || '';
+        renderPreview();
+        setStatus('已载入草稿');
+        return;
+      }
+    }
+  });
+
+  document.getElementById('btn-publish').addEventListener('click', publish);
+  document.getElementById('btn-online-delete').addEventListener('click', deleteOnline);
+  document.getElementById('btn-online-reload').addEventListener('click', function () {
+    loadOnlineList();
+    setStatus('已刷新线上列表');
+  });
+
+  els.online.addEventListener('change', function () {
+    var slug = els.online.value;
+    if (!slug) { editSlug = null; return; }
+    Blog.loadPosts().then(function (posts) {
+      var p = posts.filter(function (x) { return x.slug === slug; })[0];
+      if (!p) return;
+      editSlug = p.slug;
+      els.title.value = p.title;
+      els.date.value = p.date;
+      els.category.value = p.category || '';
+      els.summary.value = p.summary || '';
+      els.content.value = p.content || '';
+      renderPreview();
+      setStatus('已载入线上文章，修改后点「发布到线上」更新');
+    });
+  });
+
+  try {
+    var savedToken = localStorage.getItem('blog-admin-token');
+    if (savedToken) els.token.value = savedToken;
+  } catch (e) {}
+
+  els.date.value = today();
+  renderDraftOptions('');
+  renderPreview();
+  loadOnlineList();
+
+  fetch('api/posts', { cache: 'no-store' }).then(function (res) {
+    if (!res.ok) throw new Error('no api');
+  }).catch(function () {
+    var pub = document.getElementById('btn-publish');
+    var del = document.getElementById('btn-online-delete');
+    var tk = document.getElementById('token');
+    if (pub) { pub.disabled = true; pub.style.opacity = '0.45'; pub.title = '当前站点为静态托管，暂不支持在线发布'; }
+    if (del) { del.disabled = true; del.style.opacity = '0.45'; }
+    if (tk) { tk.disabled = true; tk.style.opacity = '0.45'; tk.placeholder = '当前站点为静态托管'; }
+    els.status.textContent = '当前站点为静态托管：发布请用「导出 Markdown 文件」或「复制 Markdown」，把内容交给助手发布。';
+  });
+})();
+</script>
+
+</body>
+</html>

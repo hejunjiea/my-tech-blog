@@ -1,0 +1,12 @@
+{
+  "name": "my-tech-blog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "我的技术博客：Node.js 静态托管 + 口令保护的在线写作接口",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}
