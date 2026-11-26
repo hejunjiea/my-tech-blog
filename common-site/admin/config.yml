@@ -31,6 +31,8 @@ collections:
       - name: slug
         label: Slug（英文短横线）
         widget: string
+        required: true
+        pattern: ['^[a-zA-Z0-9._-]+$', '只能包含字母、数字、点、下划线和短横线，例如 my-new-post']
         hint: "唯一；只能包含字母、数字、点、下划线和短横线，例如 my-new-post"
       - name: title
         label: 标题

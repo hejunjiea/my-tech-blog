@@ -1,5 +1,5 @@
 ---
-slug: ai-agent测试好 9999999999
+slug: ai-agent
 title: AI 应用工程：从提示词到智能体
 date: 2026-11-25
 category: 人工智能
