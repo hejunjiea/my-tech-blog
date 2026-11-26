@@ -10,20 +10,23 @@
 
 ```
 content/posts/*.md
-      │  node common-build.mjs dist
-      ▼
-dist/posts.json + 页面
-      │  git push main
-      ▼
+   ├─ 方式 A：/admin/ 登录后保存（自动提交）
+   └─ 方式 B：本地写 md → git push
+            │
+            ▼
 GitHub Actions（web-pages.yml）
-      ▼
+            ▼
 GitHub Pages 线上站点
 ```
 
-两个关键事实：
+现在有两条发布路径：
 
-1. **写作台在 GitHub Pages 上不能直接发布**。静态托管没有 Node 服务，发布按钮会被禁用，只能「导出 Markdown 文件」。
-2. **新文章进 GitHub 的唯一路径**是：写 `.md` → 本地校验 → 提交 → 推送 → Actions 自动构建发布。
+| 方式 | 适合 | 操作 |
+|---|---|---|
+| A. Decap 后台 | 在线快速写作 | 打开 `/admin/` → GitHub 登录 → 保存 |
+| B. 手动 Markdown | 本地写、批量修改 | 写 `.md` → 校验 → commit → push |
+
+注意：公共写作台 `write.html` 在 GitHub Pages 上是静态页面，没有 Node 接口，发布按钮会被禁用；在线发布请用 `/admin/`。
 
 ---
 
@@ -47,7 +50,35 @@ ssh -T git@github.com
 
 ---
 
-## 三、完整流程
+## 三、方式 A：Decap 后台在线写作（推荐）
+
+线上后台地址：
+
+```
+https://hejunjiea.github.io/my-tech-blog/admin/
+```
+
+流程：
+
+1. 点「使用 GitHub 登录」，在 GitHub 页面点 **Authorize**
+2. 左侧「文章」→ 新建
+3. 填写字段：
+   - `Slug`：唯一，只能字母、数字、`.`、`_`、`-`，例如 `my-new-post`
+   - 标题、日期、分类、摘要
+   - 正文：Markdown，支持 `![说明](assets/uploads/xxx.png)`
+4. 点「Save」，Decap 直接提交到 `content/posts/`
+5. GitHub Actions 自动重建，约 1 分钟后线上可见
+
+注意：
+
+- 游客阅读不需要登录，只有 `/admin/` 写作后台需要 GitHub 登录
+- 不要修改已发布文章的 `slug`，否则链接会变化
+- 上传的图片会提交到 `common-site/assets/uploads/`
+- 保存成功不等于已上线，以 Actions 成功为准
+
+---
+
+## 四、方式 B：手动 Markdown 完整流程
 
 ### 1. 新建文章文件
 
@@ -137,7 +168,7 @@ git push
 
 ---
 
-## 四、修改已有文章
+## 五、修改已有文章
 
 ```sh
 cd /Users/tanyou/Desktop/2Mac_project/md-blog-site
@@ -151,7 +182,7 @@ git push git@github.com:hejunjiea/my-tech-blog.git main
 
 ---
 
-## 五、批量提交多篇文章
+## 六、批量提交多篇文章
 
 ```sh
 cd /Users/tanyou/Desktop/2Mac_project/md-blog-site
@@ -163,7 +194,7 @@ git push git@github.com:hejunjiea/my-tech-blog.git main
 
 ---
 
-## 六、常见问题
+## 七、常见问题
 
 **Q1：构建失败，提示缺少 title / date 格式不对 / slug 重复**
 
@@ -182,7 +213,7 @@ HTTPS remote 没有写入权限，改用 SSH 地址推送：
 git push git@github.com:hejunjiea/my-tech-blog.git main
 ```
 
-或一次性切换 remote 为 SSH（见 5. 推送步骤）。
+或一次性切换 remote 为 SSH（见方式 B 的推送步骤）。
 
 **Q3：推送成功但线上页面没变化**
 
@@ -193,7 +224,7 @@ git push git@github.com:hejunjiea/my-tech-blog.git main
 
 **Q4：写作台的「发布到线上」是灰色**
 
-这是正常现象。GitHub Pages 是静态托管，没有 Node 接口。请用「导出 Markdown 文件」，再按本文流程提交。
+`write.html` 是本地 Node 写作台；GitHub Pages 上没有接口，所以置灰。线上写作请打开 `/admin/` 用 GitHub 登录，或按方式 B 手动提交。
 
 **Q5：`data/posts.json` 要不要提交？**
 
@@ -205,7 +236,7 @@ git push git@github.com:hejunjiea/my-tech-blog.git main
 
 ---
 
-## 七、命令速查
+## 八、命令速查
 
 ```sh
 # 进入项目
