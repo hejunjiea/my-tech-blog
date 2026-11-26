@@ -11,6 +11,9 @@ locale: zh_Hans
 site_url: https://hejunjiea.github.io/my-tech-blog/
 display_url: https://hejunjiea.github.io/my-tech-blog/
 
+media_folder: common-site/assets/uploads
+public_folder: assets/uploads
+
 collections:
   - name: posts
     label: 文章
