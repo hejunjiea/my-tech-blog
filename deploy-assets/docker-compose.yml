@@ -10,5 +10,6 @@ services:
       PORT: 8000
       HOST: 0.0.0.0
       DATA_DIR: /data
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN:-https://hejunjiea.github.io}
     volumes:
       - ./data:/data

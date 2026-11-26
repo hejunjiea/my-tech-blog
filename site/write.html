@@ -189,7 +189,7 @@
   <span><a href="index.html">回到首页</a></span>
 </footer>
 
-<script src="assets/app.js"></script>
+<script src="assets/config.js"></script><script src="assets/app.js"></script>
 <script>
 (function () {
   var STORAGE_KEY = 'blog-writer-drafts-v1';
@@ -304,7 +304,7 @@
     };
     if (editSlug) payload.slug = editSlug;
 
-    fetch('api/posts', {
+    fetch(window.blogApiUrl ? window.blogApiUrl('api/posts') : 'api/posts', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-admin-token': token },
       body: JSON.stringify(payload)
@@ -327,7 +327,7 @@
     if (!slug) { setStatus('先选择一篇线上文章'); return; }
     if (!token) { setStatus('请先填写写作口令'); els.token.focus(); return; }
     if (!confirm('确定删除这篇线上文章吗？')) return;
-    fetch('api/posts/' + encodeURIComponent(slug), {
+    fetch(window.blogApiUrl ? window.blogApiUrl('api/posts/' + encodeURIComponent(slug)) : 'api/posts/' + encodeURIComponent(slug), {
       method: 'DELETE',
       headers: { 'x-admin-token': token }
     }).then(function (res) {
@@ -511,7 +511,7 @@
   renderPreview();
   loadOnlineList();
 
-  fetch('api/posts', { cache: 'no-store' }).then(function (res) {
+  fetch(window.blogApiUrl ? window.blogApiUrl('api/posts') : 'api/posts', { cache: 'no-store' }).then(function (res) {
     if (!res.ok) throw new Error('no api');
   }).catch(function () {
     var pub = document.getElementById('btn-publish');

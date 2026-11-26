@@ -99,7 +99,7 @@
   }
 
   function loadPosts() {
-    var api = new URL('api/posts', location.href).href;
+    var api = window.blogApiUrl ? window.blogApiUrl('api/posts') : new URL('api/posts', location.href).href;
     var fallback = new URL('posts.json', location.href).href;
 
     function sortPosts(data) {

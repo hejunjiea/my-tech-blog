@@ -7,6 +7,7 @@ const path = require('path');
 const PORT = Number(process.env.PORT || 8000);
 const HOST = process.env.HOST || '0.0.0.0';
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || 'https://hejunjiea.github.io';
 
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const SEED_FILE = path.join(__dirname, 'seed.json');
@@ -144,6 +145,26 @@ const server = http.createServer(async (req, res) => {
   const pathname = url.pathname;
 
   try {
+    if (pathname.startsWith('/api/')) {
+      const origin = req.headers.origin;
+      res.setHeader('Vary', 'Origin');
+      if (origin === ALLOWED_ORIGIN) {
+        res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
+      }
+      if (req.method === 'OPTIONS') {
+        if (origin !== ALLOWED_ORIGIN) {
+          json(res, 403, { error: 'origin not allowed' });
+          return;
+        }
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Admin-Token');
+        res.setHeader('Access-Control-Max-Age', '600');
+        res.writeHead(204);
+        res.end();
+        return;
+      }
+    }
+
     if (pathname === '/api/posts' && req.method === 'GET') {
       json(res, 200, { posts: allPosts() });
       return;

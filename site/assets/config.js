@@ -10,3 +10,12 @@ window.BLOG_GISCUS = {
   category: 'Announcements',
   categoryId: 'DIC_kwDOV7mOyc4DL9Gq'
 };
+
+// 统一生成 API 地址：配置了独立服务就用它，否则回退到当前站点同源。
+window.blogApiUrl = function (pathname) {
+  var configured = String(window.BLOG_API_BASE || '').trim();
+  var base = configured
+    ? new URL(configured.replace(/\/+$/, '') + '/', location.href)
+    : location.href;
+  return new URL(String(pathname).replace(/^\/+/, ''), base).href;
+};
