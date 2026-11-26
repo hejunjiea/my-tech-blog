@@ -1,6 +1,6 @@
 #!/bin/sh
 # 一键构建 + 部署（Node.js 20 动态站点，支持在线写作）
-# 用法：sh deploy-node.sh
+# 用法：sh web-deploy-node.sh
 set -eu
 
 ROOT=$(cd "$(dirname "$0")" && pwd)
@@ -12,8 +12,8 @@ PKG=$(mktemp -d "${TMP_ROOT%/}/blog-fn.XXXXXX")
 CONFIG=$(mktemp "${TMP_ROOT%/}/blog-fn-cfg.XXXXXX")
 mkdir -p "$PKG"
 
-node "$ROOT/build.mjs" "$PKG/public"
-cp "$ROOT/server/server.js" "$ROOT/server/run.sh" "$ROOT/server/package.json" "$PKG/"
+node "$ROOT/common-build.mjs" "$PKG/public"
+cp "$ROOT/common-server/server.js" "$ROOT/common-server/run.sh" "$ROOT/common-server/package.json" "$PKG/"
 chmod 755 "$PKG/run.sh"
 
 cat > "$PKG/build.sh" <<'BUILD'
@@ -29,7 +29,7 @@ chmod 755 "$PKG/build.sh"
 
 ADMIN_TOKEN="${BLOG_ADMIN_TOKEN:-}"
 if [ -z "$ADMIN_TOKEN" ]; then
-  echo "请先设置环境变量 BLOG_ADMIN_TOKEN（写作口令），例如：BLOG_ADMIN_TOKEN=yourpass sh deploy-node.sh" >&2
+  echo "请先设置环境变量 BLOG_ADMIN_TOKEN（写作口令），例如：BLOG_ADMIN_TOKEN=yourpass sh web-deploy-node.sh" >&2
   exit 1
 fi
 

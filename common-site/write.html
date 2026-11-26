@@ -427,7 +427,7 @@
     if (!els.title.value.trim()) { setStatus('先写一个标题再导出'); els.title.focus(); return; }
     var slug = slugify();
     download(buildMarkdown(slug), slug + '.md');
-    setStatus('已导出 ' + slug + '.md，放进 blog-site/content/posts 后运行 sh deploy.sh');
+    setStatus('已导出 ' + slug + '.md，放进 blog-site/content/posts 后运行 sh web-deploy.sh');
   });
 
   document.getElementById('btn-copy').addEventListener('click', function () {

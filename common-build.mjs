@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
- * 构建脚本：把 content/posts/*.md 编译成 posts.json，并复制 site/ 下的静态页面。
- * 用法：node build.mjs [输出目录]   默认输出到 dist/
+ * 构建脚本：把 content/posts/*.md 编译成 posts.json，并复制 common-site/ 下的静态页面。
+ * 用法：node common-build.mjs [输出目录]   默认输出到 dist/
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
-const siteDir = path.join(root, 'site');
+const siteDir = path.join(root, 'common-site');
 const contentDir = path.join(root, 'content', 'posts');
 const outDir = path.resolve(process.argv[2] || path.join(root, 'dist'));
 
@@ -47,7 +47,7 @@ function parseFrontMatter(raw, file) {
   return { meta, body };
 }
 
-if (!fs.existsSync(siteDir)) throw new Error('缺少 site 目录');
+if (!fs.existsSync(siteDir)) throw new Error('缺少 common-site 目录');
 if (!fs.existsSync(contentDir)) fs.mkdirSync(contentDir, { recursive: true });
 
 copyDir(siteDir, outDir);

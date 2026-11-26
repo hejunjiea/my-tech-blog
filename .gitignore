@@ -1,8 +1,8 @@
 # ---- 构建与部署产物（可随时重建）----
 /local-site/
 /dist/
-/deploy-package/
-/blog-deploy.tar.gz
+/web-package/
+/web-deploy.tar.gz
 
 # ---- 本地运行时数据（线上发布的文章）----
 /data/

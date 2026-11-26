@@ -10,8 +10,8 @@ HOST="${3:-127.0.0.1}"
 RUN="$ROOT/local-site"
 
 rm -rf "$RUN"
-node "$ROOT/build.mjs" "$RUN/public" > /dev/null
-cp "$ROOT/server/server.js" "$ROOT/server/run.sh" "$ROOT/server/package.json" "$RUN/"
+node "$ROOT/common-build.mjs" "$RUN/public" > /dev/null
+cp "$ROOT/common-server/server.js" "$ROOT/common-server/run.sh" "$ROOT/common-server/package.json" "$RUN/"
 cp "$RUN/public/seed.json" "$RUN/seed.json"
 mkdir -p "$ROOT/data"
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 # 一键构建 + 部署：读取 content/posts/*.md，生成站点并发布。
-# 用法：sh deploy.sh
+# 用法：sh web-deploy.sh
 set -eu
 
 ROOT=$(cd "$(dirname "$0")" && pwd)
@@ -12,7 +12,7 @@ SRC=$(mktemp -d "${TMP_ROOT%/}/blog-site.XXXXXX")
 CONFIG=$(mktemp "${TMP_ROOT%/}/blog-config.XXXXXX")
 printf '{}' > "$CONFIG"
 
-node "$ROOT/build.mjs" "$SRC/public"
+node "$ROOT/common-build.mjs" "$SRC/public"
 
 RESULT=$(sh "$CLI" deployments create \
   --site-id "$SITE_ID" \

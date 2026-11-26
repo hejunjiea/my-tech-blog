@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: 20
       - name: 构建静态博客
-        run: node build.mjs dist
+        run: node common-build.mjs dist
       - name: 配置 Pages
         uses: actions/configure-pages@v5
       - name: 上传静态文件
