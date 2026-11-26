@@ -26,7 +26,7 @@ https://decap-oauth.<你的子域>.workers.dev
 |---|---|
 | Application name | 我的技术博客 Decap CMS |
 | Homepage URL | `https://hejunjiea.github.io/my-tech-blog/` |
-| Authorization callback URL | `https://decap-oauth.<你的子域>.workers.dev/callback` |
+| Authorization callback URL | `https://decap-oauth.web-decap-oauth.workers.dev/callback` |
 
 创建后记下 `Client ID`，再点「Generate a new client secret」生成 `Client Secret`。
 
@@ -49,7 +49,7 @@ backend:
   name: github
   repo: hejunjiea/my-tech-blog
   branch: main
-  base_url: https://decap-oauth.<你的子域>.workers.dev
+  base_url: https://decap-oauth.web-decap-oauth.workers.dev
   auth_endpoint: auth
 ```
 

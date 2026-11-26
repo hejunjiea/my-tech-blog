@@ -2,8 +2,8 @@ backend:
   name: github
   repo: hejunjiea/my-tech-blog
   branch: main
-  # 部署 Cloudflare Worker 后，替换成 Worker 地址（末尾不要带 /auth）
-  base_url: https://YOUR-WORKER.workers.dev
+  # 已部署的 Cloudflare Worker OAuth 代理
+  base_url: https://decap-oauth.web-decap-oauth.workers.dev
   auth_endpoint: auth
 
 locale: zh_Hans
