@@ -1,0 +1,52 @@
+backend:
+  name: github
+  repo: hejunjiea/my-tech-blog
+  branch: main
+  # 部署 Cloudflare Worker 后，替换成 Worker 地址（末尾不要带 /auth）
+  base_url: https://YOUR-WORKER.workers.dev
+  auth_endpoint: auth
+
+locale: zh_Hans
+
+site_url: https://hejunjiea.github.io/my-tech-blog/
+display_url: https://hejunjiea.github.io/my-tech-blog/
+
+collections:
+  - name: posts
+    label: 文章
+    label_singular: 文章
+    folder: content/posts
+    create: true
+    delete: true
+    extension: md
+    format: frontmatter
+    identifier_field: slug
+    slug: "{{fields.slug}}"
+    summary: "{{title}} — {{date}}"
+    sortable_fields: [date, title]
+    fields:
+      - name: slug
+        label: Slug（英文短横线）
+        widget: string
+        hint: "唯一；只能包含字母、数字、点、下划线和短横线，例如 my-new-post"
+      - name: title
+        label: 标题
+        widget: string
+      - name: date
+        label: 日期
+        widget: datetime
+        date_format: YYYY-MM-DD
+        time_format: false
+        format: YYYY-MM-DD
+      - name: category
+        label: 分类
+        widget: string
+        default: 笔记
+        required: false
+      - name: summary
+        label: 摘要
+        widget: text
+        required: false
+      - name: body
+        label: 正文
+        widget: markdown

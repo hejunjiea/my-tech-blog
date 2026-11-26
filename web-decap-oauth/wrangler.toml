@@ -1,0 +1,7 @@
+name = "decap-oauth"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+# 站点来源（Origin，不含路径和末尾斜杠）
+ALLOWED_ORIGIN = "https://hejunjiea.github.io"

@@ -29,6 +29,18 @@ sh web-deploy.sh            # 发布静态站（Trae 托管）
 sh web-package-deploy.sh    # 生成可上传服务器的部署包
 ```
 
+## 在线写作（Decap CMS）
+
+先按 [web-decap-oauth/README.md](web-decap-oauth/README.md) 部署 OAuth Worker，并把 Worker 地址填到 `common-site/admin/config.yml` 的 `base_url`。
+
+然后打开：
+
+```
+https://hejunjiea.github.io/my-tech-blog/admin/
+```
+
+用 GitHub 登录后即可新增、编辑、删除文章。保存会直接提交到 `content/posts/`，GitHub Actions 自动重建页面。
+
 ## 目录结构
 
 ```
@@ -49,6 +61,7 @@ md-blog-site/
 ├── web-deploy-node.sh        # 发布 Node 服务
 ├── web-package-deploy.sh     # 生成服务器部署包
 ├── web-assets/               # 部署包素材（Docker、Nginx、部署文档）
+├── web-decap-oauth/          # Decap CMS 登录代理（Cloudflare Worker）
 │
 └── .github/workflows/web-pages.yml   # GitHub Pages 自动部署
 ```

@@ -110,7 +110,7 @@ sitemap.push('</urlset>', '');
 fs.writeFileSync(path.join(outDir, 'sitemap.xml'), sitemap.join('\n'), 'utf8');
 
 fs.writeFileSync(path.join(outDir, 'robots.txt'),
-  ['User-agent: *', 'Allow: /', 'Disallow: /write.html', `Sitemap: ${SITE_URL}/sitemap.xml`, ''].join('\n'),
+  ['User-agent: *', 'Allow: /', 'Disallow: /write.html', 'Disallow: /admin/', `Sitemap: ${SITE_URL}/sitemap.xml`, ''].join('\n'),
   'utf8');
 
 const rss = ['<?xml version="1.0" encoding="UTF-8"?>',

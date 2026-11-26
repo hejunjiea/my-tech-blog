@@ -13,6 +13,10 @@
 .env
 .env.*
 !.env.example
+.dev.vars
+
+# ---- Cloudflare Worker 本地调试 ----
+.wrangler/
 
 # ---- 依赖与包管理（本项目零依赖，保留以防将来引入）----
 node_modules/
