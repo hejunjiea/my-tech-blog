@@ -21,6 +21,9 @@ export default {
 };
 
 function auth(request, env) {
+  if (!env.GITHUB_CLIENT_ID) {
+    return new Response('缺少 GITHUB_CLIENT_ID，请先执行 wrangler secret put GITHUB_CLIENT_ID', { status: 500 });
+  }
   const url = new URL(request.url);
   const target = new URL('https://github.com/login/oauth/authorize');
   target.searchParams.set('client_id', env.GITHUB_CLIENT_ID);
@@ -31,6 +34,9 @@ function auth(request, env) {
 }
 
 async function callback(request, env) {
+  if (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET) {
+    return new Response('缺少 OAuth 密钥，请先配置 GITHUB_CLIENT_ID 与 GITHUB_CLIENT_SECRET', { status: 500 });
+  }
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
   if (!code) return new Response('缺少 code 参数', { status: 400 });

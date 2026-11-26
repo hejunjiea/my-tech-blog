@@ -7,11 +7,29 @@
       .replace(/"/g, '&quot;');
   }
 
+  function safeUrl(url) {
+    var u = String(url == null ? '' : url).trim();
+    if (!u) return '';
+    if (/^[a-z][a-z0-9+.-]*:/i.test(u)) {
+      return /^https?:/i.test(u) ? u : '';
+    }
+    return u;
+  }
+
   function inline(s) {
     var out = escapeHtml(s);
     out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
     out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-    out = out.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    out = out.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, function (m, alt, src) {
+      var safe = safeUrl(src);
+      if (!safe) return m;
+      return '<img src="' + safe + '" alt="' + alt + '" loading="lazy" decoding="async">';
+    });
+    out = out.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (m, text, href) {
+      var safe = safeUrl(href);
+      if (!safe) return m;
+      return '<a href="' + safe + '" target="_blank" rel="noopener">' + text + '</a>';
+    });
     return out;
   }
 
