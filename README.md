@@ -1,6 +1,6 @@
 # 我的技术博客
 
-零依赖 Node.js 站点：Markdown 文章编译为静态页；本地可带写作接口运行，线上支持 GitHub Pages + Decap 在线写作，也可发布静态站或部署到自有服务器。
+零依赖 Node.js 站点：Markdown 文章编译为静态页；本地可带写作接口运行，线上支持 GitHub Pages + Sveltia 在线写作，也可发布静态站或部署到自有服务器。
 
 ## 本地部署与使用
 
@@ -52,12 +52,14 @@ node common-build.mjs dist
 
 ## 线上部署与使用
 
-### 方式一：GitHub Pages + Decap CMS（当前线上，支持在线写作）
+### 方式一：GitHub Pages + Sveltia CMS（当前线上，支持在线写作）
 
 - 访客：直接访问 `https://hejunjiea.github.io/my-tech-blog/`，**不需要登录**
 - 作者：打开 `https://hejunjiea.github.io/my-tech-blog/admin/`，用 GitHub 登录后新增、编辑、删除文章
 - 保存即提交到 `content/posts/`，GitHub Actions 自动重建，约 1 分钟上线
 - OAuth Worker 部署与密钥配置见 [web-decap-oauth/README.md](web-decap-oauth/README.md)
+
+> 后台使用 Sveltia CMS，兼容 Decap 配置，自带暗色模式和中文界面；登录仍由 `web-decap-oauth` Worker 完成。
 
 ### 方式二：手动 Markdown + push
 
@@ -93,7 +95,7 @@ sh web-deploy.sh
 | 文章数据 | `data/posts.json` | `content/posts/*.md` + Git commit |
 | 发布方式 | 本地即时生效 | Actions 自动重建 |
 
-> 本地和线上数据不互通：本地写的文章不会自动出现在 GitHub，线上 Decap 保存的文章也不会写回本地 `data/posts.json`。
+> 本地和线上数据不互通：本地写的文章不会自动出现在 GitHub，线上后台保存的文章也不会写回本地 `data/posts.json`。
 
 ## 目录结构
 
@@ -115,7 +117,7 @@ md-blog-site/
 ├── web-deploy-node.sh        # 发布 Node 服务
 ├── web-package-deploy.sh     # 生成服务器部署包
 ├── web-assets/               # 部署包素材（Docker、Nginx、部署文档）
-├── web-decap-oauth/          # Decap CMS 登录代理（Cloudflare Worker）
+├── web-decap-oauth/          # Sveltia CMS 登录代理（Cloudflare Worker）
 │
 └── .github/workflows/web-pages.yml   # GitHub Pages 自动部署
 ```

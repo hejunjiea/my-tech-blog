@@ -23,7 +23,7 @@
     out = out.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, function (m, alt, src) {
       var safe = safeUrl(src);
       if (!safe) return m;
-      return '<img src="' + safe + '" alt="' + alt + '" loading="lazy" decoding="async">';
+      return '<img src="' + safe + '" alt="' + alt + '" title="' + alt + '" loading="lazy" decoding="async" tabindex="0">';
     });
     out = out.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (m, text, href) {
       var safe = safeUrl(href);
@@ -311,13 +311,29 @@
         ? ' · <a class="cat-link" href="index.html?cat=' + encodeURIComponent(post.category) + '">' + escapeHtml(post.category) + '</a>'
         : '';
 
+      var catCrumbs = post.category
+        ? '<a class="crumb-cat" href="index.html?cat=' + encodeURIComponent(post.category) + '">分类：' + escapeHtml(post.category) + '</a>'
+        : '';
+
+      var toc = buildToc(post.content);
+
       root.innerHTML =
-        '<a class="back" href="index.html">← 返回文章列表</a>' +
+        '<nav class="article-crumbs" aria-label="文章导航">' +
+          '<a class="crumb-home" href="index.html">← 返回首页</a>' + catCrumbs +
+        '</nav>' +
         '<h1>' + escapeHtml(post.title) + '</h1>' +
         '<p class="meta">' + escapeHtml(formatDate(post.date)) + catLink +
         ' · 约 ' + readingMinutes(post.content) + ' 分钟</p>' +
-        buildToc(post.content) +
-        mdToHtml(post.content) +
+        '<div class="article-layout' + (toc ? '' : ' no-toc') + '">' +
+          (toc ? '<aside class="article-aside">' + toc + '</aside>' : '') +
+          '<div class="article-main">' + mdToHtml(post.content) + '</div>' +
+        '</div>' +
+        '<div class="article-actions">' +
+          '<a class="action-primary" href="index.html">回到首页</a>' +
+          (post.category
+            ? '<a href="index.html?cat=' + encodeURIComponent(post.category) + '">查看「' + escapeHtml(post.category) + '」分类</a>'
+            : '') +
+        '</div>' +
         pager +
         '<p class="end">感谢阅读，欢迎回到文章列表继续浏览。</p>';
     }).catch(function () {
@@ -362,6 +378,55 @@
 
     apply(current());
   }
+
+  var lightbox = null;
+
+  function ensureLightbox() {
+    if (lightbox) return lightbox;
+    lightbox = document.createElement('div');
+    lightbox.className = 'img-lightbox';
+    lightbox.setAttribute('role', 'dialog');
+    lightbox.setAttribute('aria-modal', 'true');
+    lightbox.innerHTML = '<button type="button" class="img-lightbox-close" aria-label="关闭">×</button>' +
+      '<img alt=""><p class="img-lightbox-cap"></p>';
+    document.body.appendChild(lightbox);
+    lightbox.addEventListener('click', function (e) {
+      if (e.target === lightbox || e.target.classList.contains('img-lightbox-close')) closeLightbox();
+    });
+    return lightbox;
+  }
+
+  function openLightbox(src, alt) {
+    if (!src) return;
+    var lb = ensureLightbox();
+    var img = lb.querySelector('img');
+    img.src = src;
+    img.alt = alt || '';
+    lb.querySelector('.img-lightbox-cap').textContent = alt || '';
+    lb.classList.add('is-open');
+    document.body.classList.add('lightbox-open');
+    lb.querySelector('.img-lightbox-close').focus();
+  }
+
+  function closeLightbox() {
+    if (!lightbox) return;
+    lightbox.classList.remove('is-open');
+    document.body.classList.remove('lightbox-open');
+  }
+
+  document.addEventListener('click', function (e) {
+    var img = e.target && e.target.closest ? e.target.closest('.article img') : null;
+    if (!img) return;
+    openLightbox(img.getAttribute('src'), img.getAttribute('alt') || '');
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeLightbox();
+    if ((e.key === 'Enter' || e.key === ' ') && e.target && e.target.matches && e.target.matches('.article img')) {
+      e.preventDefault();
+      openLightbox(e.target.getAttribute('src'), e.target.getAttribute('alt') || '');
+    }
+  });
 
   global.Blog = {
     escapeHtml: escapeHtml,

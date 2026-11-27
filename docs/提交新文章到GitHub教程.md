@@ -23,7 +23,7 @@ GitHub Pages 线上站点
 
 | 方式 | 适合 | 操作 |
 |---|---|---|
-| A. Decap 后台 | 在线快速写作 | 打开 `/admin/` → GitHub 登录 → 保存 |
+| A. Sveltia 后台 | 在线快速写作 | 打开 `/admin/` → GitHub 登录 → 保存 |
 | B. 手动 Markdown | 本地写、批量修改 | 写 `.md` → 校验 → commit → push |
 
 注意：公共写作台 `write.html` 在 GitHub Pages 上是静态页面，没有 Node 接口，发布按钮会被禁用；在线发布请用 `/admin/`。
@@ -50,7 +50,7 @@ ssh -T git@github.com
 
 ---
 
-## 三、方式 A：Decap 后台在线写作（推荐）
+## 三、方式 A：Sveltia 后台在线写作（推荐）
 
 线上后台地址：
 
@@ -66,7 +66,7 @@ https://hejunjiea.github.io/my-tech-blog/admin/
    - `Slug`：唯一，只能字母、数字、`.`、`_`、`-`，例如 `my-new-post`
    - 标题、日期、分类、摘要
    - 正文：Markdown，支持 `![说明](assets/uploads/xxx.png)`
-4. 点「Save」，Decap 直接提交到 `content/posts/`
+4. 点「Save」，Sveltia 直接提交到 `content/posts/`
 5. GitHub Actions 自动重建，约 1 分钟后线上可见
 
 注意：

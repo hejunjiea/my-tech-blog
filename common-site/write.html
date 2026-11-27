@@ -22,46 +22,47 @@
 </script>
 <link rel="stylesheet" href="style.css">
 <style>
-  .writer-head { padding: 44px 0 0; }
+  .wrap { max-width: 1600px; }
+  .writer-head { padding: clamp(28px, 4vw, 56px) 0 0; }
   .writer-head .inner {
     display: flex; align-items: baseline; justify-content: space-between;
     gap: 16px; padding-bottom: 18px; border-bottom: 1px solid var(--line);
   }
-  .writer-title { padding: 44px 0 10px; }
+  .writer-title { padding: clamp(30px, 4vw, 56px) 0 10px; }
   .writer-title h1 {
     font-family: Georgia, "Songti SC", "Noto Serif SC", serif;
-    font-weight: 500; font-size: 30px; margin: 0 0 10px;
+    font-weight: 500; font-size: clamp(26px, 2.6vw, 40px); margin: 0 0 10px;
   }
-  .writer-title p { margin: 0; color: var(--muted); font-size: 14px; }
+  .writer-title p { margin: 0; color: var(--muted); font-size: clamp(14px, 0.3vw + 12.5px, 16px); }
   .editor-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
-    padding: 28px 0 20px; align-items: start;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(18px, 2.2vw, 36px);
+    padding: clamp(22px, 3vw, 36px) 0 20px; align-items: start; width: 100%;
   }
-  .pane { border: 1px solid var(--line); border-radius: 4px; background: var(--bg); }
+  .pane { min-width: 0; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); }
   .pane-head {
     padding: 12px 16px; border-bottom: 1px solid var(--line);
     font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint);
   }
-  .pane-body { padding: 18px 16px; }
+  .pane-body { padding: clamp(14px, 1.6vw, 24px); }
   .field { margin-bottom: 14px; }
   .field label { display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 6px; }
   .field input[type="text"], .field input[type="date"] {
-    width: 100%; padding: 9px 10px; font-size: 14px; color: var(--ink);
+    width: 100%; padding: 9px 10px; font-size: clamp(14px, 0.3vw + 13px, 16px); color: var(--ink);
     border: 1px solid var(--line); border-radius: 3px; background: var(--paper);
     font-family: inherit;
   }
   .field input:focus { outline: none; border-color: var(--focus); background: var(--bg); }
-  .row-2 { display: grid; grid-template-columns: 150px 1fr; gap: 12px; }
+  .row-2 { display: grid; grid-template-columns: minmax(120px, 150px) 1fr; gap: 12px; }
   textarea#content {
-    width: 100%; min-height: 380px; resize: vertical; padding: 12px;
+    width: 100%; min-height: clamp(380px, 55vh, 760px); resize: vertical; padding: 12px;
     font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
-    font-size: 13px; line-height: 1.75; color: var(--ink);
+    font-size: clamp(13px, 0.3vw + 12px, 15px); line-height: 1.75; color: var(--ink);
     border: 1px solid var(--line); border-radius: 3px; background: var(--paper);
   }
   textarea#content:focus { outline: none; border-color: var(--focus); background: var(--bg); }
   .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
   button {
-    font-family: inherit; font-size: 13px; padding: 8px 14px; cursor: pointer;
+    font-family: inherit; font-size: clamp(13px, 0.2vw + 12px, 14.5px); padding: 8px 14px; cursor: pointer;
     border: 1px solid var(--line); border-radius: 3px; background: var(--bg); color: var(--ink);
     transition: background .18s ease, border-color .18s ease;
   }
@@ -69,25 +70,27 @@
   button.primary { background: var(--ink); border-color: var(--ink); color: var(--bg); }
   button.primary:hover { background: var(--muted); border-color: var(--muted); }
   .drafts { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
-  .drafts label { display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 8px; }
+  .drafts label { display: block; font-size: clamp(12.5px, 0.2vw + 11.5px, 14px); color: var(--muted); margin-bottom: 8px; }
   .drafts select {
-    width: 100%; padding: 9px 10px; font-size: 13.5px; color: var(--ink);
+    width: 100%; padding: 9px 10px; font-size: clamp(13.5px, 0.25vw + 12.5px, 15px); color: var(--ink);
     border: 1px solid var(--line); border-radius: 3px; background: var(--paper);
     font-family: inherit;
   }
   .drafts input {
-    width: 100%; padding: 9px 10px; font-size: 13.5px; color: var(--ink);
+    width: 100%; padding: 9px 10px; font-size: clamp(13.5px, 0.25vw + 12.5px, 15px); color: var(--ink);
     border: 1px solid var(--line); border-radius: 3px; background: var(--paper);
     font-family: inherit;
   }
   .drafts input:focus { outline: none; border-color: var(--focus); background: var(--bg); }
-  .status { min-height: 20px; margin-top: 10px; font-size: 12.5px; color: var(--accent); line-height: 1.7; }
+  .status { min-height: 20px; margin-top: 10px; font-size: clamp(12.5px, 0.2vw + 11.5px, 14px); color: var(--accent); line-height: 1.7; }
   .preview { position: sticky; top: 20px; }
-  .preview .article { padding: 24px 20px 12px; }
-  .preview .article h1 { font-size: 24px; margin-bottom: 10px; }
+  .preview .article { padding: clamp(18px, 2vw, 28px) clamp(16px, 1.8vw, 24px) 12px; min-width: 0; overflow-wrap: anywhere; }
+  .preview .article h1 { font-size: clamp(22px, 2vw, 30px); margin-bottom: 10px; }
   .preview .article .meta { margin-bottom: 20px; padding-bottom: 16px; }
-  .preview-empty { color: var(--faint); font-size: 13.5px; padding: 8px 0; }
-  .writer-tips { margin: 10px 0 70px; font-size: 12.5px; color: var(--faint); line-height: 1.9; }
+  .preview .article pre { max-width: 100%; overflow-x: auto; }
+  .preview .article img { max-width: 100%; height: auto; }
+  .preview-empty { color: var(--faint); font-size: clamp(13.5px, 0.25vw + 12.5px, 15px); padding: 8px 0; }
+  .writer-tips { margin: 10px 0 70px; font-size: clamp(12.5px, 0.2vw + 11.5px, 14px); color: var(--faint); line-height: 1.9; }
   @media (max-width: 820px) {
     .editor-grid { grid-template-columns: 1fr; }
     .preview { position: static; }
