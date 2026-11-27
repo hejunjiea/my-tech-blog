@@ -116,8 +116,47 @@
       .trim();
   }
 
+  function fetchJson(url) {
+    return fetch(url, { cache: 'no-store' }).then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    });
+  }
+
+  // 轻量索引：首页/文章页导航/找相邻文章用（只有标题/日期/分类/摘要，无正文）
+  function loadIndex() {
+    var api = window.blogApiUrl ? window.blogApiUrl('api/posts-index') : null;
+    var fallback = new URL('posts-index.json', location.href).href;
+
+    function sortPosts(data) {
+      var posts = (data && data.posts) || [];
+      return posts.slice().sort(function (a, b) {
+        return String(b.date).localeCompare(String(a.date));
+      });
+    }
+
+    if (api) {
+      return fetchJson(api).then(sortPosts).catch(function () {
+        return fetchJson(fallback).then(sortPosts);
+      });
+    }
+    return fetchJson(fallback).then(sortPosts);
+  }
+
+  // 单篇完整数据：文章页按需取正文
+  function loadArticle(slug) {
+    var api = window.blogApiUrl ? window.blogApiUrl('api/posts/' + encodeURIComponent(slug)) : null;
+    var fallback = new URL('posts/' + encodeURIComponent(slug) + '.json', location.href).href;
+
+    if (api) {
+      return fetchJson(api).catch(function () { return fetchJson(fallback); });
+    }
+    return fetchJson(fallback);
+  }
+
+  // 兼容老接口：加载完整 posts.json（给本地 Node 服务或旧场景用）
   function loadPosts() {
-    var api = window.blogApiUrl ? window.blogApiUrl('api/posts') : new URL('api/posts', location.href).href;
+    var api = window.blogApiUrl ? window.blogApiUrl('api/posts') : null;
     var fallback = new URL('posts.json', location.href).href;
 
     function sortPosts(data) {
@@ -127,20 +166,10 @@
       });
     }
 
-    return fetch(api, { cache: 'no-store' })
-      .then(function (res) {
-        if (!res.ok) throw new Error('api ' + res.status);
-        return res.json();
-      })
-      .then(sortPosts)
-      .catch(function () {
-        return fetch(fallback, { cache: 'no-store' })
-          .then(function (res) {
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            return res.json();
-          })
-          .then(sortPosts);
-      });
+    if (api) {
+      return fetchJson(api).then(sortPosts).catch(function () { return fetchJson(fallback).then(sortPosts); });
+    }
+    return fetchJson(fallback).then(sortPosts);
   }
 
   /* ---------------- 首页 ---------------- */
@@ -192,7 +221,7 @@
     var params = new URLSearchParams(location.search);
     indexState.category = params.get('cat') || '';
 
-    loadPosts().then(function (posts) {
+    loadIndex().then(function (posts) {
       indexState.posts = posts;
       if (indexState.category) {
         var exists = posts.some(function (p) { return p.category === indexState.category; });
@@ -271,12 +300,29 @@
     if (!root) return;
     var slug = new URLSearchParams(location.search).get('slug');
     root.innerHTML = '<p class="list-hint">正在加载文章…</p>';
+    if (!slug) {
+      document.title = '文章不存在 · 我的技术博客';
+      root.innerHTML = '<a class="back" href="index.html">← 返回文章列表</a>' +
+        '<h1>文章不存在</h1><p>缺少文章标识。</p>';
+      return;
+    }
 
-    loadPosts().then(function (posts) {
-      var post = null;
-      for (var i = 0; i < posts.length; i++) {
-        if (posts[i].slug === slug) { post = posts[i]; break; }
+    // 并行：索引用于定位相邻文章，单篇用于正文
+    Promise.all([
+      loadIndex().catch(function () { return []; }),
+      loadArticle(slug).catch(function () { return null; })
+    ]).then(function (results) {
+      var index = results[0];
+      var post = results[1];
+
+      // 在索引里找相邻文章（索引条目无 content，但 slug/title 足够渲染 pager）
+      var idx = -1;
+      for (var i = 0; i < index.length; i++) {
+        if (index[i].slug === slug) { idx = i; break; }
       }
+      var newer = idx > 0 ? index[idx - 1] : null;
+      var older = idx < index.length - 1 ? index[idx + 1] : null;
+
       if (!post) {
         document.title = '文章不存在 · 我的技术博客';
         root.innerHTML = '<a class="back" href="index.html">← 返回文章列表</a>' +
@@ -292,9 +338,6 @@
       setProperty('og:type', 'article');
       setProperty('og:url', url);
 
-      var idx = posts.indexOf(post);
-      var newer = idx > 0 ? posts[idx - 1] : null;
-      var older = idx < posts.length - 1 ? posts[idx + 1] : null;
       var pager = '';
       if (newer || older) {
         pager = '<div class="pager">' +

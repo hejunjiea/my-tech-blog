@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>页面未找到 · 我的技术博客</title>
+<meta name="description" content="页面不存在或已被移动。">
+<script>
+(function () {
+  try {
+    var mode = localStorage.getItem('blog-theme-mode');
+    if (!mode) {
+      var old = localStorage.getItem('blog-theme');
+      mode = (old === 'light' || old === 'dark') ? old : 'system';
+    }
+    var dark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var html = document.documentElement;
+    html.setAttribute('data-theme', dark ? 'dark' : 'light');
+    html.setAttribute('data-theme-mode', mode);
+  } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="style.css">
+<style>
+.err-page{text-align:center;padding:clamp(40px,8vh,100px) 20px 60px}
+.err-code{font-family:Georgia,"Songti SC",serif;font-size:clamp(64px,14vw,160px);font-weight:500;line-height:1;margin:0;color:var(--accent);opacity:.85}
+.err-title{font-size:clamp(20px,3vw,28px);margin:12px 0 8px;font-weight:600}
+.err-desc{color:var(--faint);max-width:460px;margin:0 auto 28px;font-size:clamp(14px,1.6vw,16px);line-height:1.7}
+.err-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.err-actions a{display:inline-block;padding:10px 22px;border-radius:6px;text-decoration:none;font-size:14px}
+.err-actions .btn-primary{background:var(--accent);color:#fff}
+.err-actions .btn-secondary{border:1px solid var(--line);color:var(--text)}
+.err-actions .btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap inner">
+    <a class="brand" href="index.html">我的技术博客</a>
+    <nav class="nav">
+      <a href="index.html">文章</a>
+      <a href="index.html#about">关于</a>
+      <a href="write.html">写作</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="err-page">
+    <p class="err-code">404</p>
+    <h1 class="err-title">页面走丢了</h1>
+    <p class="err-desc">你访问的链接不存在、已被移动，或者打错了地址。回首页看看有没有你想找的内容。</p>
+    <div class="err-actions">
+      <a class="btn-primary" href="index.html">回到首页</a>
+      <a class="btn-secondary" href="javascript:history.back()">返回上一页</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer wrap">
+  <span>© 2026 我的技术博客</span>
+  <span><a href="index.html">回到首页</a></span>
+</footer>
+
+</body>
+</html>

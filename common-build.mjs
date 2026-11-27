@@ -81,8 +81,18 @@ for (const file of files) {
 
 posts.sort((a, b) => String(b.date).localeCompare(String(a.date)) || String(a.slug).localeCompare(String(b.slug)));
 
+// 旧的完整 posts.json（兼容本地 Node 服务）
 fs.writeFileSync(path.join(outDir, 'posts.json'), JSON.stringify({ posts }, null, 2) + '\n', 'utf8');
 fs.writeFileSync(path.join(outDir, 'seed.json'), JSON.stringify({ posts }, null, 2) + '\n', 'utf8');
+
+// 新：轻量索引（首页加载）+ 每篇独立数据（文章页按需加载）
+const indexDir = path.join(outDir, 'posts');
+fs.mkdirSync(indexDir, { recursive: true });
+const indexList = posts.map(({ slug, title, date, category, summary }) => ({ slug, title, date, category, summary }));
+fs.writeFileSync(path.join(outDir, 'posts-index.json'), JSON.stringify({ posts: indexList }, null, 2) + '\n', 'utf8');
+for (const p of posts) {
+  fs.writeFileSync(path.join(indexDir, `${p.slug}.json`), JSON.stringify(p, null, 2) + '\n', 'utf8');
+}
 
 const SITE_URL = 'https://hejunjiea.github.io/my-tech-blog';
 const SITE_NAME = '我的技术博客';

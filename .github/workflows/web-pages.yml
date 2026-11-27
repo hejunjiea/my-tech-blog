@@ -23,7 +23,7 @@ jobs:
       - name: 配置 Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: 构建静态博客
         run: node common-build.mjs dist
       - name: 配置 Pages
